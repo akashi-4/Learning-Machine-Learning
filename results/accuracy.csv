@@ -1,0 +1,5 @@
+2024-11-17 00:16:21,Logistic Regression,0.946,credit.pkl
+2024-11-17 00:24:24,Logistic Regression,0.946,credit.pkl
+2024-11-17 00:34:10,KNN,0.986,credit.pkl
+2024-11-17 00:43:07,Random Forest,0.982,credit.pkl
+2024-11-17 00:44:37,Random Forest,0.98,credit.pkl
