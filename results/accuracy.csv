@@ -7,3 +7,8 @@
 2024-11-17 01:21:47,Naive Bayes,0.4767656090071648,census.pkl
 2024-11-17 01:22:04,Random Forest,0.8466734902763562,census.pkl
 2024-11-17 01:22:13,KNN,0.8223132036847492,census.pkl
+2024-11-17 01:33:06,Random Forest,0.982,credit.pkl
+2024-11-17 01:34:04,Logistic Regression,0.946,credit.pkl
+2024-11-17 01:35:58,KNN,0.986,credit.pkl
+2024-11-17 01:37:37,Decision Tree,0.982,credit.pkl
+2024-11-17 01:38:04,Neural Network,0.946,credit.pkl

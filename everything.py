@@ -54,9 +54,31 @@ def type_effect(text, delay=0.07):
         
     print()  # Final newline
 
+def get_best_accuracies():
+    with open('results/accuracy.csv', 'r') as f:
+        lines = f.readlines()
+        best_accuracies = {}
+        for line in lines:
+            date, model, accuracy, dataset = line.strip().split(',')
+            if dataset not in best_accuracies:
+                best_accuracies[dataset] = {}
+            if model not in best_accuracies[dataset]:
+                best_accuracies[dataset][model] = float(accuracy)
+            else:
+                if float(accuracy) > best_accuracies[dataset][model]:
+                    best_accuracies[dataset][model] = float(accuracy)
+        return print_best_accuracies(best_accuracies)
+
+def print_best_accuracies(best_accuracies):
+    for dataset, models in best_accuracies.items():
+        print(f'Best accuracies for dataset {dataset}:')
+        for model, accuracy in models.items():
+            print(f'{model}: {accuracy:.4f}')
+
 def ask_to_show_confusion_matrix():
     print('Do you want to see the confusion matrix? (y/n)')
     answer = input()
+    print("-------------------")
     return answer == 'y'
 
 def ask_parameters():
@@ -67,7 +89,10 @@ def ask_parameters():
     max_iter = int(input())
     print('Tolerance:')
     tol = float(input())
-    return hidden_layer_sizes, max_iter, tol
+    print('Verbose: (True/False)')
+    verb = input()
+    print("-------------------")
+    return hidden_layer_sizes, max_iter, tol, verb
 
 def show_shape(x,y):
     print('X shape:', x.shape)
@@ -105,7 +130,7 @@ def decision_tree(filename):
     dt.fit(X_train, Y_train)
     y_pred = dt.predict(X_test)
     accuracy = compare_predictions(Y_test, y_pred)
-    print('Accuracy using Decision Tree: ' + str(accuracy))
+    type_effect('Accuracy using Decision Tree: ' + str(accuracy))
     if ask_to_show_confusion_matrix():
         show_confusion_matrix(X_train, Y_train, X_test, Y_test, dt)
     save_accuracy('Decision Tree', accuracy, filename)
@@ -120,7 +145,7 @@ def random_forest(filename):
     random_forest.fit(X_train,Y_train)
     y_pred = random_forest.predict(X_test)
     accuracy = compare_predictions(Y_test, y_pred)
-    print('Accuracy using Random Forest: ' + str(accuracy))
+    type_effect('Accuracy using Random Forest: ' + str(accuracy))
     if ask_to_show_confusion_matrix():
         show_confusion_matrix(X_train, Y_train, X_test, Y_test, random_forest)
     save_accuracy('Random Forest', accuracy, filename)
@@ -134,7 +159,7 @@ def knn(filename):
     knn.fit(X_train, Y_train)
     y_pred = knn.predict(X_test)
     accuracy = compare_predictions(Y_test, y_pred)
-    print('Accuracy using KNN: ' + str(accuracy))
+    type_effect('Accuracy using KNN: ' + str(accuracy))
     if ask_to_show_confusion_matrix():
         show_confusion_matrix(X_train, Y_train, X_test, Y_test, knn)
     save_accuracy('KNN', accuracy, filename)
@@ -150,70 +175,66 @@ def svm(filename):
         show_shape(X_train, Y_train)
         show_shape(X_test, Y_test)
     print("Using C=1.0")
-    print("-------------------")
     svm_model = train_svm(X_train, Y_train, 'linear', 1.0)
     y_pred = make_predictions(svm_model, X_test)
     accuracy = compare_predictions(Y_test, y_pred)
     save_accuracy('SVM-linear-1', accuracy, filename)
-    print('Accuracy using Linear: ' + str(accuracy))
-    print("-------------------")
+    type_effect('Accuracy using Linear: ' + str(accuracy))
     svm_model = train_svm(X_train, Y_train, 'rbf', 1.0)
     y_pred = make_predictions(svm_model, X_test)
     accuracy = compare_predictions(Y_test, y_pred)
     save_accuracy('SVM-rbf-1', accuracy, filename)
-    print('Accuracy using RBF: ' + str(accuracy))
-    print("-------------------")
+    type_effect('Accuracy using RBF: ' + str(accuracy))
+
     svm_model = train_svm(X_train, Y_train, 'poly', 1.0)
     y_pred = make_predictions(svm_model, X_test)
     accuracy = compare_predictions(Y_test, y_pred) 
     save_accuracy('SVM-poly-1', accuracy, filename)
-    print('Accuracy using Poly: ' + str(accuracy))
-    print("-------------------")
+    type_effect('Accuracy using Poly: ' + str(accuracy))
+
     svm_model = train_svm(X_train, Y_train, 'sigmoid', 1.0)
     y_pred = make_predictions(svm_model, X_test)
     accuracy = compare_predictions(Y_test, y_pred)
     save_accuracy('SVM-sigmoid-1', accuracy, filename)
-    print('Accuracy using Sigmoid: ' + str(accuracy))
-    print(" ")
+    type_effect('Accuracy using Sigmoid: ' + str(accuracy))
     print("Using C=2")
-    print("-------------------")
+
     svm_model = train_svm(X_train, Y_train, 'linear', 2)
     y_pred = make_predictions(svm_model, X_test)
     accuracy = compare_predictions(Y_test, y_pred)
     save_accuracy('SVM-linear-2', accuracy, filename)
-    print('Accuracy using Linear: ' + str(accuracy))
-    print("-------------------")
+    type_effect('Accuracy using Linear: ' + str(accuracy))
+
     svm_model = train_svm(X_train, Y_train, 'rbf', 2)
     y_pred = make_predictions(svm_model, X_test)
     accuracy = compare_predictions(Y_test, y_pred)
     save_accuracy('SVM-rbf-2', accuracy, filename)
-    print('Accuracy using RBF: ' + str(accuracy))
-    print("-------------------")
+    type_effect('Accuracy using RBF: ' + str(accuracy))
     svm_model = train_svm(X_train, Y_train, 'poly', 2)
     y_pred = make_predictions(svm_model, X_test)
     accuracy = compare_predictions(Y_test, y_pred)
     save_accuracy('SVM-poly-2', accuracy, filename)
-    print('Accuracy using Poly: ' + str(accuracy))
-    print("-------------------")
+    type_effect('Accuracy using Poly: ' + str(accuracy))
+
     svm_model = train_svm(X_train, Y_train, 'sigmoid', 2)
     y_pred = make_predictions(svm_model, X_test)
     accuracy = compare_predictions(Y_test, y_pred)
     save_accuracy('SVM-sigmoid-2', accuracy, filename)
-    print('Accuracy using Sigmoid: ' + str(accuracy))
-    print("-------------------")
+    type_effect('Accuracy using Sigmoid: ' + str(accuracy))
+
 # Rede Neural
 def neural(filename):
     X_train, Y_train, X_test, Y_test = load_data(filename)
-    hidden_layer_sizes, max_iter, tol = ask_parameters()
+    hidden_layer_sizes, max_iter, tol, verb = ask_parameters()
     if ask_to_show_shape():
         show_shape(X_train, Y_train)
         show_shape(X_test, Y_test)
-    mlp = MLPClassifier(verbose=True, hidden_layer_sizes=hidden_layer_sizes, max_iter=max_iter, tol=tol)
+    mlp = MLPClassifier(verbose=verb, hidden_layer_sizes=hidden_layer_sizes, max_iter=max_iter, tol=tol)
     mlp.fit(X_train, Y_train)
     y_pred = mlp.predict(X_test)
     accuracy = compare_predictions(Y_test, y_pred)
     save_accuracy('Neural Network', accuracy, filename)
-    print('Accuracy using Neural Network: ' + str(accuracy))
+    type_effect('Accuracy using Neural Network: ' + str(accuracy))
     if ask_to_show_confusion_matrix():
         show_confusion_matrix(X_train, Y_train, X_test, Y_test, mlp)
 # Naive Bayes
@@ -227,7 +248,7 @@ def naive_bayes(filename):
     y_pred = naive.predict(X_test)
     accuracy = compare_predictions(Y_test, y_pred)
     save_accuracy('Naive Bayes', accuracy, filename)
-    print('Accuracy using Naive Bayes: ' + str(accuracy))
+    type_effect('Accuracy using Naive Bayes: ' + str(accuracy))
     if ask_to_show_confusion_matrix():
         show_confusion_matrix(X_train, Y_train, X_test, Y_test, naive)
 # Logistic Regression
@@ -240,7 +261,7 @@ def logistic_regression(filename):
     logistic.fit(X_train, Y_train)
     y_pred = logistic.predict(X_test)
     accuracy = compare_predictions(Y_test, y_pred)
-    print('Accuracy using Logistic Regression: ' + str(accuracy))
+    type_effect('Accuracy using Logistic Regression: ' + str(accuracy))
     if ask_to_show_confusion_matrix():
         show_confusion_matrix(X_train, Y_train, X_test, Y_test, logistic)
     save_accuracy('Logistic Regression', accuracy, filename)
@@ -252,21 +273,18 @@ def grid_search(filename, modelo, parametro):
     X, Y = concatenate_data(X_train, Y_train, X_test, Y_test)
     grid = GridSearchCV(estimator=modelo, param_grid=parametro)
     grid.fit(X, Y)
-    print("-------------------")
     print('Best Score:', grid.best_score_)
-    print("-------------------")
     print_best_params(grid.best_params_)
-    print("-------------------")
     print("Saving best parameters...")
     save_best_params(modelo.__class__.__name__, grid.best_params_, filename)
-
+    print("Best parameters saved.")
 # Definindo os parâmetros
 parametros_dt = {'criterion': ['gini', 'entropy'], 'splitter': ['best', 'random'], 'min_samples_split': [2, 5, 10], 'min_samples_leaf': [1, 5, 10]}
 paremetros_rf = {'n_estimators': [10, 40, 150], 'criterion': ['gini', 'entropy'], 'min_samples_split': [2, 5, 10], 'min_samples_leaf': [1, 5, 10]}
 parametros_knn = {'n_neighbors': [5, 10, 15], 'metric': ['minkowski', 'euclidean', 'manhattan'], 'p': [1, 2]}
 parametros_svm = {'kernel': ['linear', 'rbf', 'poly', 'sigmoid'], 'C': [1.0, 2.0, 3.0]}
 parametros_mlp = {'activation': ['identity', 'logistic', 'tanh', 'relu'], 'solver': ['lbfgs', 'sgd', 'adam'], 'batch_size': [10, 20, 40], 'verbose': [False]}
-parametros_lr = {'C': [1.0, 2.0, 3.0], 'max_iter': [100, 200, 300], 'tol': [0.0001, 0.001, 0.01], 'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']}
+parametros_lr = {'C': [1.0, 2.0, 3.0], 'max_iter': [100, 500, 1000], 'tol': [0.0001, 0.001, 0.01], 'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']}
 # Vamos salvar os melhores parâmetros para cada modelo
 def save_best_params(model, params, dataset):
     # Vamos ler se já há os melhores parâmetros para o modelo para aquele dataset, cada dataset terá um arquivo diferente
@@ -331,6 +349,7 @@ def choose_model():
     print('5 - KNN')
     print('6 - SVM')
     print('7 - Neural Network')
+    print('Or choose one of the following options:')
     print('8 - Grid Search')
     print('9 - Cross Validation using KFold')
     print('0 - Exit')
@@ -353,12 +372,13 @@ def choose_model3():
     print('5 - KNN')
     print('6 - SVM')
     print('7 - Neural Network')
-    print('8 - print Best Params')
+    print('8 - Print Best Params')
     return int(input())
 def choose_dataset():
     print('Choose the dataset you want to use:')
     print('1 - Credit')
     print('2 - Census')
+    print('3 - Print Best Accuracies')
     print('0 - Exit')
     print("-------------------")
     return int(input())
@@ -368,48 +388,51 @@ def print_best_params(params):
         print(f'{key}: {value}')
 
 def main():
+    print("-------------------")
     print("Welcome to the Machine Learning Model Selection")
+    print("You can choose the dataset and the model you want to use")
+    print("You can also apply Grid Search to find the best parameters for the model")
+    print("Or you can use Cross Validation to evaluate the model")
+    print("The results will be saved in the results folder")
+    print("-------------------")
     while (True):
         dataset = choose_dataset()
+        print("-------------------")
         if dataset == 1:
             filename = dict_datasets['Credit']
         elif dataset == 2:
             filename = dict_datasets['Census']
+        elif dataset == 3:
+            get_best_accuracies()
         elif dataset == 0:
             exit()
         menu_option = choose_model()
         if menu_option == 1:
-            print("-------------------")
             print("Chosen model: Logistic Regression")
             logistic_regression(filename)
         elif menu_option == 2:
-            print("-------------------")
             print("Chosen model: Naive Bayes")
             naive_bayes(filename)
         elif menu_option == 3:
-            print("-------------------")
             print("Chosen model: Decision Tree")
             decision_tree(filename)
         elif menu_option == 4:
-            print("-------------------")
             print("Chosen model: Random Forest")
             random_forest(filename)
         elif menu_option == 5:
-            print("-------------------")
             print("Chosen model: KNN")
             knn(filename)
         elif menu_option == 6:
-            print("-------------------")
             print("Chosen model: SVM")
             svm(filename)
         elif menu_option == 7:
-            print("-------------------")
             print("Chosen model: Neural Network")
             neural(filename)
         elif menu_option == 8:
-            menu_option2 = choose_model2()
             print("-------------------")
+            menu_option2 = choose_model2()
             print("Wait a moment, this may take a while")
+            print("-------------------")
             if menu_option2 == 1:
                 print("Chosen model: Logistic Regression")  
                 grid_search(filename, LogisticRegression(), parametros_lr)
@@ -428,13 +451,16 @@ def main():
             elif menu_option2 == 6:
                 print("Chosen model: Neural Network")
                 grid_search(filename, MLPClassifier(), parametros_mlp)
+            print("-------------------")
         elif menu_option == 9:
+            print("-------------------")
             menu_option3 = choose_model3()
             model_class = dict_classifiers[dict_int_models[menu_option3]]
             print("-------------------")
             print("Wait a moment, this may take a while")
+            print("-------------------")
             results = cross_validation(filename=filename, model_class=model_class, ran=30)
         elif menu_option == 0:
             exit()
-
+        print("-------------------")
 main()

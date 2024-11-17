@@ -1,0 +1,4 @@
+adicionar gráficos
+adicionar maneiras de avaliar melhor cada um dos classificadores e armazenar de maneira melhor os resultados
+(mudar o codigo todo para utilizar a GPU)
+achar outras databases e fazer o processo todo para fixar
