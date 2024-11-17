@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import pickle
 import datetime
-import random
 import sys
 import time
 
