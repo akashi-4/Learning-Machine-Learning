@@ -3,3 +3,7 @@
 2024-11-17 00:34:10,KNN,0.986,credit.pkl
 2024-11-17 00:43:07,Random Forest,0.982,credit.pkl
 2024-11-17 00:44:37,Random Forest,0.98,credit.pkl
+2024-11-17 01:13:56,KNN,0.986,credit.pkl
+2024-11-17 01:21:47,Naive Bayes,0.4767656090071648,census.pkl
+2024-11-17 01:22:04,Random Forest,0.8466734902763562,census.pkl
+2024-11-17 01:22:13,KNN,0.8223132036847492,census.pkl
