@@ -89,10 +89,8 @@ def ask_parameters():
     max_iter = int(input())
     print('Tolerance:')
     tol = float(input())
-    print('Verbose: (True/False)')
-    verb = input()
     print("-------------------")
-    return hidden_layer_sizes, max_iter, tol, verb
+    return hidden_layer_sizes, max_iter, tol, False
 
 def show_shape(x,y):
     print('X shape:', x.shape)
@@ -463,4 +461,30 @@ def main():
         elif menu_option == 0:
             exit()
         print("-------------------")
-main()
+
+def save_params_v2(classifier):
+    path = 'results/' + classifier.__class__.__name__ + '_done.sav'
+    pickle.dump(classifier, open(path, 'wb'))
+
+classifierdt = DecisionTreeClassifier(criterion='entropy', random_state=0, min_samples_leaf=1, min_samples_split=5, splitter='best')
+classifierknn = KNeighborsClassifier(metric='minkowski', n_neighbors=15, p=1)
+classifiersvm = SVC(C=3.0, kernel='rbf')
+classifierlr = LogisticRegression(C=1.0, max_iter=100, solver='newton-cg', tol=0.0001)
+classifiermlp = MLPClassifier(activation='relu', batch_size=40, solver='adam', verbose=False)
+classifierforest = RandomForestClassifier(criterion='gini', min_samples_leaf=1, min_samples_split=2, n_estimators=150)
+
+
+save_params_v2(classifierdt)
+save_params_v2(classifierknn)
+save_params_v2(classifiersvm)
+save_params_v2(classifierlr)
+save_params_v2(classifiermlp)
+save_params_v2(classifierforest)
+print("All models saved!")
+
+if __name__ == '__main__':
+    main()
+
+
+# Utilizando diferentes classificadores para o mesmo cliente, se o numero de classificadores que preverem que o cliente irá pagar for maior que o numero de classificadores que preverem que o cliente não irá pagar, então o cliente irá pagar. Caso contrário, o cliente não irá pagar.
+# Podemos criar diferentes pesos para cada classificador, por exemplo, se o classificador 1 for um classificador muito bom, então ele terá um peso maior que os outros classificadores.

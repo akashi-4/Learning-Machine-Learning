@@ -1,3 +1,4 @@
+data,algorithm,accuracy,dataset
 2024-11-17 00:16:21,Logistic Regression,0.946,credit.pkl
 2024-11-17 00:24:24,Logistic Regression,0.946,credit.pkl
 2024-11-17 00:34:10,KNN,0.986,credit.pkl
@@ -12,3 +13,17 @@
 2024-11-17 01:35:58,KNN,0.986,credit.pkl
 2024-11-17 01:37:37,Decision Tree,0.982,credit.pkl
 2024-11-17 01:38:04,Neural Network,0.946,credit.pkl
+2024-11-17 18:51:31,Logistic Regression,0.946,credit.pkl
+2024-11-17 18:51:37,Naive Bayes,0.938,credit.pkl
+2024-11-17 18:51:48,Decision Tree,0.982,credit.pkl
+2024-11-17 18:51:58,Random Forest,0.982,credit.pkl
+2024-11-17 18:52:18,KNN,0.986,credit.pkl
+2024-11-17 18:52:25,SVM-linear-1,0.946,credit.pkl
+2024-11-17 18:52:27,SVM-rbf-1,0.982,credit.pkl
+2024-11-17 18:52:29,SVM-poly-1,0.968,credit.pkl
+2024-11-17 18:52:31,SVM-sigmoid-1,0.838,credit.pkl
+2024-11-17 18:52:33,SVM-linear-2,0.946,credit.pkl
+2024-11-17 18:52:35,SVM-rbf-2,0.988,credit.pkl
+2024-11-17 18:52:36,SVM-poly-2,0.968,credit.pkl
+2024-11-17 18:52:38,SVM-sigmoid-2,0.826,credit.pkl
+2024-11-17 18:54:12,Neural Network,0.948,credit.pkl
