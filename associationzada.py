@@ -89,20 +89,14 @@ def mercado2(min_support, min_confidence, min_lift):
     return results_assoc
 
 def visualize_association_rules(results_list):
-    """
-    Create visualizations for association rules analysis results.
-    """
     if not results_list:
         print("No rules found to visualize!")
         return None
         
-    # Combine all dataframes
     combined_df = pd.concat(results_list, ignore_index=True)
     
-    # Create figure with subplots
     fig = plt.figure(figsize=(15, 10))
     
-    # 1. Scatter plot of Support vs Confidence colored by Lift
     plt.subplot(2, 2, 1)
     scatter = plt.scatter(combined_df['Support'], 
                          combined_df['Confidence'],
@@ -114,12 +108,10 @@ def visualize_association_rules(results_list):
     plt.ylabel('Confidence')
     plt.title('Support vs Confidence (colored by Lift)')
     
-    # 2. Distribution of Lift values
     plt.subplot(2, 2, 2)
     sns.histplot(data=combined_df, x='Lift', bins=20)
     plt.title('Distribution of Lift Values')
-    
-    # 3. Top 10 rules by lift
+
     plt.subplot(2, 2, 3)
     top_10_lift = combined_df.nlargest(10, 'Lift')
     base_items = [' , '.join(map(str, x)) for x in top_10_lift['Items Base']]
@@ -131,7 +123,6 @@ def visualize_association_rules(results_list):
     plt.xlabel('Lift')
     plt.title('Top 10 Rules by Lift')
     
-    # 4. Support vs Lift scatter
     plt.subplot(2, 2, 4)
     plt.scatter(combined_df['Support'], 
                combined_df['Lift'],
@@ -144,9 +135,6 @@ def visualize_association_rules(results_list):
     return fig
 
 def create_rules_summary(results_list):
-    """
-    Create a summary DataFrame of the association rules.
-    """
     if not results_list:
         return pd.DataFrame({
             'Total Rules': [0],
