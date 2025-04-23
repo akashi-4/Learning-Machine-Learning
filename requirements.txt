@@ -11,5 +11,4 @@ scipy>=1.7.0
 spacy>=3.0.0
 apyori>=1.1.2
 bs4>=0.0.1
-urllib>=1.26.0
 IPython>=8.0.0

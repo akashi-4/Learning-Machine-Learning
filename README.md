@@ -51,7 +51,6 @@ machine_learning/
 ├── data/
 │   ├── raw/          # Original datasets
 │   └── processed/    # Preprocessed datasets
-├── notebooks/        # Jupyter notebooks for tutorials and examples
 ├── results/          # Output results and visualizations
 ├── requirements.txt
 ├── setup.py
