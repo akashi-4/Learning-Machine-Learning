@@ -1,0 +1,58 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+.env/
+.venv/
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Local development settings
+.env
+.env.local
+
+# Dataset files (if they're large, you might want to exclude them)
+*.csv
+*.pkl
+*.h5
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# Model files (if they're large)
+*.model
+*.pkl
+*.h5
+
+# Output files
+results/
+*.png
+*.jpg
+*.jpeg
+*.pdf
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db 
