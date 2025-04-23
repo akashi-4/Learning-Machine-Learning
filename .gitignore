@@ -42,7 +42,6 @@ env/
 *.h5
 
 # Output files
-results/
 *.png
 *.jpg
 *.jpeg
