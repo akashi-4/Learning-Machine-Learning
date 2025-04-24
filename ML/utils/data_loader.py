@@ -14,7 +14,7 @@ def load_data(file_name):
     Returns:
         tuple: (X_train, Y_train, X_test, Y_test)
     """
-    file_name = 'content/' + file_name
+    file_name = 'data/processed/' + file_name
     with open(file_name, 'rb') as f:
         X_train, Y_train, X_test, Y_test = pickle.load(f)
         return X_train, Y_train, X_test, Y_test

@@ -30,12 +30,21 @@ class NeuralNetworkClassifier(BaseClassifier):
     def ask_parameters():
         """Get neural network parameters from user input."""
         print('Personalize the parameters for the Neural Network')
-        print('Hidden Layer Sizes: (Use space to separate the values)')
-        hidden_layer_sizes = tuple(int(x) for x in input().split())
-        print('Max Iter:')
-        max_iter = int(input())
-        print('Tolerance:')
-        tol = float(input())
+        print('Hidden Layer Sizes: (Use space to separate the values) use 100 for default')
+        if input() == '':
+            hidden_layer_sizes = (100,)
+        else:
+            hidden_layer_sizes = tuple(int(x) for x in input().split())
+        print('Max Iter: use 200 for default')
+        if input() == '':
+            max_iter = 200
+        else:
+            max_iter = int(input())
+        print('Tolerance: use 0.0001 for default')
+        if input() == '':
+            tol = 0.0001
+        else:
+            tol = float(input())
         print("-------------------")
         return hidden_layer_sizes, max_iter, tol
 

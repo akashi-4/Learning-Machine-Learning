@@ -1,56 +1,40 @@
 """
 Classification models package.
 """
-from abc import ABC, abstractmethod
-from ..utils.data_loader import load_data, show_shape
-from ..utils.metrics import compare_predictions, show_confusion_matrix, save_accuracy
+from ML.utils.data_loader import load_data, show_shape
 
-class BaseClassifier(ABC):
+class BaseClassifier:
+    """Base class for all classifiers."""
+    
     def __init__(self, name):
         self.name = name
-        
-    def train_and_evaluate(self, filename, show_shapes=False, show_confusion=False):
-        """
-        Train and evaluate the classifier on given dataset.
+        self.model = None
+    
+    def train_and_evaluate(self, filename, show_shapes=False, show_confusion=True):
+        """Train and evaluate the model.
         
         Args:
-            filename (str): Name of the dataset file
-            show_shapes (bool): Whether to display data shapes
+            filename (str): Name of the preprocessed data file
+            show_shapes (bool): Whether to show data shapes
             show_confusion (bool): Whether to show confusion matrix
+            
+        Returns:
+            float: Accuracy score
         """
         # Load data
-        X_train, Y_train, X_test, Y_test = load_data(filename)
+        X_train, y_train, X_test, y_test = load_data(filename)
         
-        # Show shapes if requested
         if show_shapes:
-            show_shape(X_train, Y_train)
-            show_shape(X_test, Y_test)
+            show_shape(X_train, y_train)
         
         # Train model
-        self.fit(X_train, Y_train)
+        self.model.fit(X_train, y_train)
         
         # Make predictions
-        y_pred = self.predict(X_test)
+        y_pred = self.model.predict(X_test)
         
-        # Calculate accuracy
-        accuracy = compare_predictions(Y_test, y_pred)
-        print(f'Accuracy using {self.name}: {accuracy}')
+        # Calculate and return accuracy
+        accuracy = (y_pred == y_test).mean()
+        print(f"\n{self.name} Accuracy: {accuracy:.4f}")
         
-        # Show confusion matrix if requested
-        if show_confusion:
-            show_confusion_matrix(X_train, Y_train, X_test, Y_test, self)
-        
-        # Save accuracy
-        save_accuracy(self.name, accuracy, filename)
-        
-        return accuracy
-    
-    @abstractmethod
-    def fit(self, X, y):
-        """Train the model."""
-        pass
-    
-    @abstractmethod
-    def predict(self, X):
-        """Make predictions."""
-        pass 
+        return accuracy 

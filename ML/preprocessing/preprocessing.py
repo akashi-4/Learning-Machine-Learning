@@ -33,6 +33,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 import pickle
+import os
 
 class CreditDataPreprocessor:
     """Handles preprocessing of credit data.
@@ -44,11 +45,49 @@ class CreditDataPreprocessor:
     3. Scale numerical features for better model performance
     """
     
-    def __init__(self, file_path='credit_data.csv'):
+    def __init__(self, file_path='../../data/raw/credit_data.csv'):
         """Initialize with data file path."""
         self.data = pd.read_csv(file_path)
         self.X = None
         self.y = None
+        self._validate_input_data()
+    
+    def _validate_input_data(self):
+        """Validate input data structure and content.
+        
+        Raises:
+            ValueError: If required columns are missing or data types are incorrect
+        """
+        required_columns = ['age', 'income', 'loan', 'default']
+        missing_columns = [col for col in required_columns if col not in self.data.columns]
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {missing_columns}")
+            
+        # Validate data types
+        if not pd.api.types.is_numeric_dtype(self.data['age']):
+            raise ValueError("Age column must be numeric")
+        if not pd.api.types.is_numeric_dtype(self.data['income']):
+            raise ValueError("Income column must be numeric")
+        if not pd.api.types.is_numeric_dtype(self.data['loan']):
+            raise ValueError("Loan column must be numeric")
+            
+        # Validate value ranges
+        if self.data['income'].min() < 0:
+            raise ValueError("Income values cannot be negative")
+        if self.data['loan'].min() < 0:
+            raise ValueError("Loan values cannot be negative")
+            
+        # Validate target variable
+        if not set(self.data['default'].unique()).issubset({0, 1}):
+            raise ValueError("Default column must contain only binary values (0 or 1)")
+    
+    def handle_missing_values(self):
+        """Fill missing values in the dataset.
+        
+        For numerical features like age, we use mean imputation.
+        This helps maintain the data distribution while filling gaps.
+        """
+        self.data['age'] = self.data['age'].fillna(self.data['age'].mean())
     
     def correct_negative_ages(self):
         """Replace negative age values with mean age.
@@ -59,14 +98,6 @@ class CreditDataPreprocessor:
         """
         mean_age = self.data['age'][self.data['age'] > 0].mean()
         self.data.loc[self.data['age'] < 0, 'age'] = mean_age
-    
-    def handle_missing_values(self):
-        """Fill missing values in the dataset.
-        
-        For numerical features like age, we use mean imputation.
-        This helps maintain the data distribution while filling gaps.
-        """
-        self.data['age'].fillna(self.data['age'].mean(), inplace=True)
     
     def show_data_info(self):
         """Display basic information about the dataset."""
@@ -140,25 +171,56 @@ class CensusDataPreprocessor:
     3. Scale the final features using StandardScaler
     """
     
-    def __init__(self, file_path='census.csv'):
+    def __init__(self, file_path='../../data/raw/census_data.csv'):
         """Initialize with data file path."""
         self.data = pd.read_csv(file_path)
+        print("\nAvailable columns in census data:")
+        print(self.data.columns.tolist())
         self.X = None
         self.y = None
         
         # Initialize label encoders for each categorical column
-        # Label Encoding: Converts categories to numbers (0,1,2...)
-        # Example: 'Male'/'Female' -> 0/1
         self.label_encoders = {
             'workclass': LabelEncoder(),
             'education': LabelEncoder(),
-            'marital': LabelEncoder(),
+            'marital-status': LabelEncoder(),
             'occupation': LabelEncoder(),
             'relationship': LabelEncoder(),
             'race': LabelEncoder(),
             'sex': LabelEncoder(),
-            'country': LabelEncoder()
+            'native-country': LabelEncoder()
         }
+        self._validate_input_data()
+    
+    def _validate_input_data(self):
+        """Validate census data structure and content.
+        
+        Raises:
+            ValueError: If required columns are missing or data format is incorrect
+        """
+        # Check for required columns
+        required_columns = list(self.label_encoders.keys()) + ['age', 'income']
+        missing_columns = [col for col in required_columns if col not in self.data.columns]
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {missing_columns}")
+        
+        # Validate age column
+        if not pd.api.types.is_numeric_dtype(self.data['age']):
+            raise ValueError("Age column must be numeric")
+        if (self.data['age'] < 0).any():
+            raise ValueError("Age values cannot be negative")
+        if (self.data['age'] > 120).any():
+            raise ValueError("Age values seem unrealistic (>120)")
+            
+        # Validate categorical columns have no missing values
+        for col in self.label_encoders.keys():
+            if self.data[col].isnull().any():
+                raise ValueError(f"Column {col} contains missing values")
+                
+        # Validate income column format (should be binary <=50K, >50K)
+        valid_income = {' <=50K', ' >50K'}
+        if not set(self.data['income'].unique()).issubset(valid_income):
+            raise ValueError("Income column must contain only '<=50K' or '>50K' values")
     
     def show_data_info(self):
         """Display basic information about the dataset."""
@@ -218,12 +280,12 @@ class CensusDataPreprocessor:
         categorical_columns = {
             1: 'workclass',
             3: 'education',
-            5: 'marital',
+            5: 'marital-status',
             6: 'occupation',
             7: 'relationship',
             8: 'race',
             9: 'sex',
-            13: 'country'
+            13: 'native-country'
         }
         
         for col, name in categorical_columns.items():
@@ -254,7 +316,7 @@ class CreditRiskPreprocessor:
     to be encoded before modeling.
     """
     
-    def __init__(self, file_path='risco_credito.csv'):
+    def __init__(self, file_path='../../data/raw/credit_risk.csv'):
         """Initialize with data file path."""
         self.data = pd.read_csv(file_path)
         self.X = None
@@ -286,9 +348,16 @@ class CreditRiskPreprocessor:
         return self.X, self.y
 
 def save_preprocessed_data(X_train, y_train, X_test, y_test, filename):
-    """Save preprocessed data to pickle file."""
-    with open(filename, 'wb') as f:
+    """Save preprocessed data to pickle file in the data/processed directory."""
+    # Create the data/processed directory if it doesn't exist
+    os.makedirs('../../data/processed', exist_ok=True)
+    
+    # Construct the full path for saving the file
+    save_path = os.path.join('../../data/processed', filename)
+    
+    with open(save_path, 'wb') as f:
         pickle.dump([X_train, y_train, X_test, y_test], f)
+    print(f"Saved preprocessed data to {save_path}")
 
 def main():
     """Main execution function."""
@@ -318,6 +387,10 @@ def main():
         X_census, y_census, test_size=0.15, random_state=0
     )
     
+    X_risk_train, X_risk_test, y_risk_train, y_risk_test = train_test_split(
+        X_risk, y_risk, test_size=0.25, random_state=0
+    )
+
     # Save preprocessed data
     print("\nSaving preprocessed data...")
     save_preprocessed_data(
@@ -327,6 +400,10 @@ def main():
     save_preprocessed_data(
         X_census_train, y_census_train, X_census_test, y_census_test,
         'census.pkl'
+    )
+    save_preprocessed_data(
+        X_risk_train, y_risk_train, X_risk_test, y_risk_test,
+        'risk.pkl'
     )
     print("Preprocessing completed successfully!")
 

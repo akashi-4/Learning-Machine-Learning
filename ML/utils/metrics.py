@@ -4,6 +4,8 @@ Model evaluation metrics and utilities.
 import datetime
 from sklearn.metrics import accuracy_score
 from yellowbrick.classifier import ConfusionMatrix
+import pandas as pd
+import os
 
 def compare_predictions(y_test, y_pred):
     """Calculate accuracy score between true and predicted values."""
@@ -25,7 +27,7 @@ def show_confusion_matrix(X_train, Y_train, X_test, Y_test, model):
     cm.score(X_test, Y_test)
     cm.show()
 
-def save_accuracy(model_name, accuracy, filename):
+def save_accuracy(name,model_name, accuracy, filename):
     """
     Save model accuracy to a CSV file.
     
@@ -35,28 +37,53 @@ def save_accuracy(model_name, accuracy, filename):
         filename: Name of the dataset file
     """
     date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open('results/accuracy.csv', 'a') as f:
+    with open(f'results/{name}_results.csv', 'a') as f:
         f.write(f'{date},{model_name},{accuracy},{filename}\n')
 
-def get_best_accuracies():
-    """Read and display best accuracies for each model and dataset."""
-    with open('results/accuracy.csv', 'r') as f:
-        lines = f.readlines()
-        best_accuracies = {}
-        for line in lines:
-            date, model, accuracy, dataset = line.strip().split(',')
-            if dataset not in best_accuracies:
-                best_accuracies[dataset] = {}
-            if model not in best_accuracies[dataset]:
-                best_accuracies[dataset][model] = float(accuracy)
-            else:
-                if float(accuracy) > best_accuracies[dataset][model]:
-                    best_accuracies[dataset][model] = float(accuracy)
-        return print_best_accuracies(best_accuracies)
-
-def print_best_accuracies(best_accuracies):
-    """Print best accuracies in a formatted way."""
-    for dataset, models in best_accuracies.items():
-        print(f'Best accuracies for dataset {dataset}:')
-        for model, accuracy in models.items():
-            print(f'{model}: {accuracy:.4f}') 
+def get_best_accuracies(name):
+    """Read and display best accuracies for each model and dataset.
+    
+    Args:
+        name (str): Type of results to display ('classification' or 'regression')
+    """
+    results_file = os.path.join('results', f'{name}_results.csv')
+    
+    try:
+        # Read the CSV file
+        df = pd.read_csv(results_file)
+        
+        # For each Dataset and Model combination, find the row with max accuracy
+        best_indices = df.groupby(['Dataset', 'Model'])['Accuracy'].idxmax()
+        best_results = df.loc[best_indices].sort_values(['Dataset', 'Accuracy'], ascending=[True, False])
+        
+        # Display results
+        print(f"\nBest {name.title()} Results:")
+        print("=" * 80)
+        
+        current_dataset = None
+        for _, row in best_results.iterrows():
+            # Print dataset header if we're starting a new dataset
+            if current_dataset != row['Dataset']:
+                current_dataset = row['Dataset']
+                print(f"\nDataset: {current_dataset}")
+                print("-" * 80)
+                print("Model                  Accuracy    Parameters")
+                print("-" * 80)
+            
+            # Format and print the result row
+            model_name = f"{row['Model']:<20}"
+            print(f"{model_name} {row['Accuracy']:.4f}     {row['Parameters']}")
+            
+        print("-" * 80)
+        print("\nNote: Showing best accuracy achieved for each model and dataset combination.")
+        
+    except FileNotFoundError:
+        print(f"\nNo results file found at {results_file}")
+        print("Please run some experiments first to generate results.")
+    except Exception as e:
+        print(f"\nError reading results: {str(e)}")
+        print("Detailed DataFrame info:")
+        if 'df' in locals():
+            print("\nColumns in the DataFrame:", df.columns.tolist())
+            print("\nFirst few rows of data:")
+            print(df.head())
